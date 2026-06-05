@@ -83,24 +83,54 @@ NodeAdress buildTree(int total_node){
     }
 }
 
+/**
+ * print from node root to subtree left and right  NLR
+ */
 void preOrder(NodeAdress node ){
     if(node !=null){
-    printf("%c\t", node->info );
+    printf("\t%c", node->info );
     preOrder(node->left);
     preOrder(node->right);
     }
 
+}
+/**
+ * Print node left ->root and right 
+ * LNR
+ */
+void inOrder(NodeAdress node){
+    if(node!=null){
+        inOrder(node->left);
+        printf("\t%c",node->info);
+        inOrder(node->right);
+    }
+}
+
+/**
+ * printf from left to right then Root at last 
+ * LRN
+ */
+void postOrder(NodeAdress node){
+    if(node!=null){
+        postOrder(node->left);
+        postOrder(node->right);
+        printf("\t%c" , node->info);
+    }
 }
 
 int main ( ){
     NodeAdress pRoot ; 
     int size = 5;
     initialize(&pRoot);
-    
+
     printf("Building tree with %d nodes...\n", size);
     pRoot = buildTree(size); 
     printf("Info");
+    printf("\nPreorder traversal\n");
     preOrder(pRoot);
-
+    printf("\nIn order traversal\n");
+    inOrder(pRoot);
+    printf("\nPost order traversal\n");
+    postOrder(pRoot);
     return 0;
 }
