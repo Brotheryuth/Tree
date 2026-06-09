@@ -140,13 +140,53 @@
         return findParent(current->right, target);
     }
 
+    NodeAdress searchNode(NodeAdress root, datatype target){
+        if(root ==null){
+            return null;
+        }
+        if(root->info==target){
+            return root;
+        }
+        NodeAdress findLeft = searchNode(root->left,target);
+        if(findLeft!=null){
+            return findLeft;
+        }
+        return searchNode(root->right,target);
+    }
+
+    void updateNode(NodeAdress node , datatype targetNode , datatype uNode){
+        NodeAdress searchForNode = searchNode(node,targetNode);
+        if(searchForNode==null){
+            return ;
+        }else{
+            searchForNode->info = uNode;
+            return searchForNode;
+        }
+    }
+
+    void insertRight(NodeAdress root ,NodeAdress targetParent ,datatype item){
+        NodeAdress getNodeParent = searchNode(root,targetParent);
+        if(getNodeParent==null){
+            return;
+        }
+            makeRight(getNodeParent , item);
+    }
+
+    void insertLeft (NodeAdress root , datatype targetParent , datatype item){
+        NodeAdress getLeftParent  = searchNode(root , targetParent);
+        if(getLeftParent ==null){
+            return;
+        }
+        makeLeft(getLeftParent,item);
+    }
+
+
     int main ( ){
         NodeAdress pRoot ; 
         int size;
         printf("Enter the size of node : ");
         scanf("%d",&size);
         initialize(&pRoot);
-
         printf("Building tree with %d nodes...\n", size);
         pRoot = buildTree(size); 
         printf("Info");
@@ -162,12 +202,25 @@
         printf("\nEnter the Node you want to search for its parent:");
         scanf(" %c",&targetNode);
         if(pRoot->info ==targetNode){
-            printf("%c is the root",targetNode);
+            printf("\n%c is the root\n",targetNode);
         }else{
             NodeAdress findNode = findParent(pRoot , targetNode);
             if(findNode!=null)
             printf("\n The parent of %c is  :%c\n",targetNode,findNode->info);
+            else
+                printf("\nSearch not Found\n");
         }
+
+        datatype tNode;
+        datatype UpdateNode;
+        printf("\nEnter the Node that you want to Update  :");
+        scanf(" %c",&targetNode);
+        printf("\nEnter new Value                         :");
+        scanf(" %c",&UpdateNode);
+        updateNode(pRoot, targetNode,UpdateNode);
+        preOrder(pRoot);
+
+        insertRight(pRoot ,'2','A');
 
         return 0;
     }
