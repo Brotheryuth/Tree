@@ -69,13 +69,14 @@
             return null;
         }
         else{
-            printf("Info of node: ");
+            printf("\nInfo of node: ");
 
             scanf(" %c", &item);
             
             nl = total_node / 2;
             nr = total_node - nl - 1;
-            
+           printf("\nThe left node for %c is %d\n",item,nl);
+           printf("\nThe Right node for %c is %d\n",item,nr);
             p = makeNode(item);
             p->left = buildTree(nl);
             p->right = buildTree(nr);
@@ -156,20 +157,17 @@
 
     void updateNode(NodeAdress node , datatype targetNode , datatype uNode){
         NodeAdress searchForNode = searchNode(node,targetNode);
-        if(searchForNode==null){
-            return ;
-        }else{
+        if(searchForNode!=null){
             searchForNode->info = uNode;
-            return searchForNode;
         }
     }
 
-    void insertRight(NodeAdress root ,NodeAdress targetParent ,datatype item){
+    void insertRight(NodeAdress root ,datatype targetParent ,datatype item){
         NodeAdress getNodeParent = searchNode(root,targetParent);
         if(getNodeParent==null){
             return;
         }
-            makeRight(getNodeParent , item);
+        makeRight(getNodeParent , item);
     }
 
     void insertLeft (NodeAdress root , datatype targetParent , datatype item){
@@ -178,6 +176,44 @@
             return;
         }
         makeLeft(getLeftParent,item);
+    }
+    void freeChildren(NodeAdress root){
+        if(root==null){
+            return;
+        }
+        freeChildren(root->left);
+        freeChildren(root->right);
+        free(root);
+    }
+    void deleteNode(NodeAdress *root , datatype target){
+        if(*root == null){
+            return;
+        }
+        // if delete node is the root 
+        if((*root)->info ==target){
+            NodeAdress temp = *root;
+            freeChildren(temp);
+            *root=null;
+            printf("Delete successfully"); 
+            return;   
+        }
+        //if not
+        NodeAdress parent = findParent(*root,target);
+        if(parent==null){
+            printf("Root not found ");
+            return;
+        }
+        NodeAdress branch = null; // a temp branch to grab the entire branch
+        if(parent->left!=null && parent->left->info ==target){
+            branch = parent->left; // get the address of the target node 
+            parent->left=null; // disconnect it from the tree 
+        }else {
+            branch = parent->right;
+            parent->right = null;
+        }
+
+        freeChildren(branch);
+        printf("Node is being deleted successfully");
     }
 
 
@@ -219,8 +255,32 @@
         scanf(" %c",&UpdateNode);
         updateNode(pRoot, targetNode,UpdateNode);
         preOrder(pRoot);
+        fflush(stdout);
 
+        printf("\n Insert Right ");
+        fflush(stdout);
         insertRight(pRoot ,'2','A');
+        preOrder(pRoot);
+        printf("\n");
+        fflush(stdout);
+    
+        printf("\n Insert Left ");
+        fflush(stdout);
+        insertLeft(pRoot, '5','F');
+        preOrder(pRoot);
+        printf("\n");
+        fflush(stdout);
+
+        // delete Node 
+        printf("\n Delete Node ");
+        fflush(stdout);
+        deleteNode(&pRoot , '5');
+        preOrder(pRoot);
+        printf("\n");
+        fflush(stdout);
+
+
+
 
         return 0;
     }
