@@ -1,136 +1,173 @@
-#include<stdio.h>
-#include<stdlib.h>
-#define null NULL 
-typedef char datatype;
+    #include<stdio.h>
+    #include<stdlib.h>
+    #define null NULL 
+    typedef char datatype;
 
-struct myTree{
-    datatype info;
-    struct myTree *left;
-    struct myTree *right;
-};
-// hold block address 
-typedef struct myTree *NodeAdress;
+    struct myTree{
+        datatype info;
+        struct myTree *left;
+        struct myTree *right;
+    };
+    // hold block address 
+    typedef struct myTree *NodeAdress;
 
-// allocate memory 
-NodeAdress getNode(){
-    NodeAdress p; 
-    p = (struct myTree *)malloc(sizeof(struct myTree));
-    return p;
-}
-
-void freeNode( NodeAdress p ){
-    free(p);
-}
-
-void initialize(NodeAdress *pRoot){
-    *pRoot = null;
-}
-
-NodeAdress makeNode( datatype item){
-    NodeAdress p = getNode();
-    p->info = item;
-    p->left = null;
-    p->right = null;
-    return p;
-}
-
-
-void makeLeft( NodeAdress p , datatype item){
-    if(p == null){
-        printf("Parent does not exist\n");
-        return; 
+    // allocate memory 
+    NodeAdress getNode(){
+        NodeAdress p; 
+        p = (struct myTree *)malloc(sizeof(struct myTree));
+        return p;
     }
-    if (p->left != null){
-        printf("Left child already exists\n");
-        return; 
-    }
-    
-    p->left = makeNode(item);
-}
 
-void makeRight(NodeAdress p , datatype item){
-    if(p == null){
-        printf("Parent does not exist\n");
-        return;
+    void freeNode( NodeAdress p ){
+        free(p);
     }
-    if (p->right != null){
-        printf("Right child already exists\n");
-        return;
-    }
-    
-    p->right = makeNode(item);
-}
 
-NodeAdress buildTree(int total_node){
-    datatype item; 
-    int nl , nr ;
-    NodeAdress p;
-    if(total_node == 0){
-        return null;
+    void initialize(NodeAdress *pRoot){
+        *pRoot = null;
     }
-    else{
-        printf("Info of node: ");
 
-        scanf(" %c", &item);
+    NodeAdress makeNode( datatype item){
+        NodeAdress p = getNode();
+        p->info = item;
+        p->left = null;
+        p->right = null;
+        return p;
+    }
+
+
+    void makeLeft( NodeAdress p , datatype item){
+        if(p == null){
+            printf("Parent does not exist\n");
+            return; 
+        }
+        if (p->left != null){
+            printf("Left child already exists\n");
+            return; 
+        }
         
-        nl = total_node / 2;
-        nr = total_node - nl - 1;
+        p->left = makeNode(item);
+    }
+
+    void makeRight(NodeAdress p , datatype item){
+        if(p == null){
+            printf("Parent does not exist\n");
+            return;
+        }
+        if (p->right != null){
+            printf("Right child already exists\n");
+            return;
+        }
         
-        p = makeNode(item);
-        p->left = buildTree(nl);
-        p->right = buildTree(nr);
-        return (p);
-    }
-}
-
-/**
- * print from node root to subtree left and right  NLR
- */
-void preOrder(NodeAdress node ){
-    if(node !=null){
-    printf("\t%c", node->info );
-    preOrder(node->left);
-    preOrder(node->right);
+        p->right = makeNode(item);
     }
 
-}
-/**
- * Print node left ->root and right 
- * LNR
- */
-void inOrder(NodeAdress node){
-    if(node!=null){
-        inOrder(node->left);
-        printf("\t%c",node->info);
-        inOrder(node->right);
+    NodeAdress buildTree(int total_node){
+        datatype item; 
+        int nl , nr ;
+        NodeAdress p;
+        if(total_node == 0){
+            return null;
+        }
+        else{
+            printf("Info of node: ");
+
+            scanf(" %c", &item);
+            
+            nl = total_node / 2;
+            nr = total_node - nl - 1;
+            
+            p = makeNode(item);
+            p->left = buildTree(nl);
+            p->right = buildTree(nr);
+            return (p);
+        }
     }
-}
 
-/**
- * printf from left to right then Root at last 
- * LRN
- */
-void postOrder(NodeAdress node){
-    if(node!=null){
-        postOrder(node->left);
-        postOrder(node->right);
-        printf("\t%c" , node->info);
+    /**
+     * print from node root to subtree left and right  NLR
+     */
+    void preOrder(NodeAdress node ){
+        if(node !=null){
+        printf("\t%c", node->info );
+        preOrder(node->left);
+        preOrder(node->right);
+        }
+
     }
-}
+    /**
+     * Print node left ->root and right 
+     * LNR
+     */
+    void inOrder(NodeAdress node){
+        if(node!=null){
+            inOrder(node->left);
+            printf("\t%c",node->info);
+            inOrder(node->right);
+        }
+    }
 
-int main ( ){
-    NodeAdress pRoot ; 
-    int size = 5;
-    initialize(&pRoot);
+    /**
+     * printf from left to right then Root at last 
+     * LRN
+     */
+    void postOrder(NodeAdress node){
+        if(node!=null){
+            postOrder(node->left);
+            postOrder(node->right);
+            printf("\t%c" , node->info);
+        }
+    }
 
-    printf("Building tree with %d nodes...\n", size);
-    pRoot = buildTree(size); 
-    printf("Info");
-    printf("\nPreorder traversal\n");
-    preOrder(pRoot);
-    printf("\nIn order traversal\n");
-    inOrder(pRoot);
-    printf("\nPost order traversal\n");
-    postOrder(pRoot);
-    return 0;
-}
+    NodeAdress findParent(NodeAdress current, datatype target){
+        // Base Case
+        if(current == null) return null;
+
+
+        if((current->left != null && current->left->info == target) || 
+        (current->right != null && current->right->info == target)){
+            return current;
+        }
+
+        
+        NodeAdress findLeft = findParent(current->left, target);
+
+        
+        if(findLeft != null){
+            return findLeft;
+        }
+        
+        // If it wasn't on the left, search the right subtree and return the result
+        return findParent(current->right, target);
+    }
+
+    int main ( ){
+        NodeAdress pRoot ; 
+        int size;
+        printf("Enter the size of node : ");
+        scanf("%d",&size);
+        initialize(&pRoot);
+
+        printf("Building tree with %d nodes...\n", size);
+        pRoot = buildTree(size); 
+        printf("Info");
+        printf("\nPreorder traversal\n");
+        preOrder(pRoot);
+        printf("\nIn order traversal\n");
+        inOrder(pRoot);
+        printf("\nPost order traversal\n");
+        postOrder(pRoot);
+
+        // find parent 
+        char targetNode;
+        printf("\nEnter the Node you want to search for its parent:");
+        scanf(" %c",&targetNode);
+        if(pRoot->info ==targetNode){
+            printf("%c is the root",targetNode);
+        }else{
+            NodeAdress findNode = findParent(pRoot , targetNode);
+            if(findNode!=null)
+            printf("\n The parent of %c is  :%c\n",targetNode,findNode->info);
+        }
+
+        return 0;
+    }
