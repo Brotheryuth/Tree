@@ -372,73 +372,235 @@ void displayTree(NodeAdress root)
     free(canvas);
 }
 
+void clearScreen()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+// Helper utility to flush input buffer and prevent character skipping bugs
+void clearBuffer()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 int main()
 {
     NodeAdress pRoot;
-    int size;
-    printf("Enter the size of node : ");
-    scanf("%d", &size);
     initialize(&pRoot);
-    printf("Building tree with %d nodes...\n", size);
-    pRoot = buildTree(size, '#');
-    printf("Info");
-    printf("\nPreorder traversal\n");
-    preOrder(pRoot);
-    printf("\nIn order traversal\n");
-    inOrder(pRoot);
-    printf("\nPost order traversal\n");
-    postOrder(pRoot);
 
-    displayTree(pRoot);
+    int choice;
+    int size;
+    datatype targetNode;
+    datatype updateNodeVal;
+    datatype itemVal;
 
-    // find parent
-    char targetNode;
-    printf("\nEnter the Node you want to search for its parent:");
-    scanf(" %c", &targetNode);
-    if (pRoot->info == targetNode)
+    do
     {
-        printf("\n%c is the root\n", targetNode);
-    }
-    else
-    {
-        NodeAdress findNode = findParent(pRoot, targetNode);
-        if (findNode != null)
-            printf("\n The parent of %c is  :%c\n", targetNode, findNode->info);
-        else
-            printf("\nSearch not Found\n");
-    }
+        printf("\n============================================\n");
+        printf("         BINARY TREE MANAGEMENT MENU        \n");
+        printf("============================================\n");
+        printf(" [1] Build / Reinitialize Tree\n");
+        printf(" [2] Display Tree (Visual Graph Layout)\n");
+        printf(" [3] Show All Traversals (Pre, In, Post)\n");
+        printf(" [4] Find Parent of a Node\n");
+        printf(" [5] Update a Node's Value\n");
+        printf(" [6] Insert Left Child\n");
+        printf(" [7] Insert Right Child\n");
+        printf(" [8] Delete Node / Branch\n");
+        printf(" [0] Exit Program\n");
+        printf("============================================\n");
+        printf("Enter your choice: ");
+        
+        if (scanf("%d", &choice) != 1)
+        {
+            printf("\nInvalid input! Press Enter to try again...");
+            clearBuffer();
+            getchar();
+            clearScreen();
+            continue;
+        }
+        clearBuffer(); // Clean line buffer after integer read
 
-    datatype tNode;
-    datatype UpdateNode;
-    printf("\nEnter the Node that you want to Update  :");
-    scanf(" %c", &targetNode);
-    printf("\nEnter new Value                         :");
-    scanf(" %c", &UpdateNode);
-    updateNode(pRoot, targetNode, UpdateNode);
-    preOrder(pRoot);
-    fflush(stdout);
+        // Clear terminal right after an option is selected for clean workspace
+        clearScreen(); 
 
-    printf("\n Insert Right ");
-    fflush(stdout);
-    insertRight(pRoot, '2', 'A');
-    preOrder(pRoot);
-    printf("\n");
-    fflush(stdout);
+        switch (choice)
+        {
+        case 1:
+            if (pRoot != null)
+            {
+                printf("Existing tree detected. Deallocating memory first...\n");
+                freeChildren(pRoot);
+                initialize(&pRoot);
+            }
+            printf("Enter the total size of the tree (number of nodes): ");
+            scanf("%d", &size);
+            clearBuffer();
+            
+            printf("Building tree with %d nodes...\n", size);
+            pRoot = buildTree(size, '#');
+            
+            printf("\nTree initialized successfully! Press Enter to clear and continue...");
+            getchar();
+            clearScreen();
+            break;
 
-    printf("\n Insert Left ");
-    fflush(stdout);
-    insertLeft(pRoot, '5', 'F');
-    preOrder(pRoot);
-    printf("\n");
-    fflush(stdout);
+        case 2:
+            displayTree(pRoot);
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
 
-    // delete Node
-    printf("\n Delete Node ");
-    fflush(stdout);
-    deleteNode(&pRoot, '5');
-    preOrder(pRoot);
-    printf("\n");
-    fflush(stdout);
+        case 3:
+            if (pRoot == null)
+            {
+                printf("Tree is empty.\n");
+            }
+            else
+            {
+                printf("\n--- Tree Traversals ---\n");
+                printf("\nPre-order (NLR) Traversal:\n");
+                preOrder(pRoot);
+                printf("\n\nIn-order (LNR) Traversal:\n");
+                inOrder(pRoot);
+                printf("\n\nPost-order (LRN) Traversal:\n");
+                postOrder(pRoot);
+                printf("\n");
+            }
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
+
+        case 4:
+            if (pRoot == null)
+            {
+                printf("Tree is empty. Cannot search.\n");
+            }
+            else
+            {
+                printf("Enter the target node character to search for its parent: ");
+                scanf(" %c", &targetNode);
+                clearBuffer();
+
+                if (pRoot->info == targetNode)
+                {
+                    printf("\nNode [%c] is the absolute Root (It has no parent).\n", targetNode);
+                }
+                else
+                {
+                    NodeAdress findNode = findParent(pRoot, targetNode);
+                    if (findNode != null)
+                        printf("\nThe parent of [%c] is: -> [%c]\n", targetNode, findNode->info);
+                    else
+                        printf("\nTarget node [%c] not found in the tree.\n", targetNode);
+                }
+            }
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
+
+        case 5:
+            if (pRoot == null)
+            {
+                printf("Tree is empty.\n");
+            }
+            else
+            {
+                printf("Enter the node value you want to Update: ");
+                scanf(" %c", &targetNode);
+                printf("Enter its new replacement character value: ");
+                scanf(" %c", &updateNodeVal);
+                clearBuffer();
+
+                updateNode(pRoot, targetNode, updateNodeVal);
+                printf("\nUpdate action completed. Verify changes via Display option.\n");
+            }
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
+
+        case 6:
+            if (pRoot == null)
+            {
+                printf("Tree is empty. Please build a root node first.\n");
+            }
+            else
+            {
+                printf("Enter parent target node character: ");
+                scanf(" %c", &targetNode);
+                printf("Enter character value for the new LEFT child: ");
+                scanf(" %c", &itemVal);
+                clearBuffer();
+
+                insertLeft(pRoot, targetNode, itemVal);
+            }
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
+
+        case 7:
+            if (pRoot == null)
+            {
+                printf("Tree is empty. Please build a root node first.\n");
+            }
+            else
+            {
+                printf("Enter parent target node character: ");
+                scanf(" %c", &targetNode);
+                printf("Enter character value for the new RIGHT child: ");
+                scanf(" %c", &itemVal);
+                clearBuffer();
+
+                insertRight(pRoot, targetNode, itemVal);
+            }
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
+
+        case 8:
+            if (pRoot == null)
+            {
+                printf("Tree is empty. Nothing to delete.\n");
+            }
+            else
+            {
+                printf("Enter target node character to delete (Warning: This drops its whole branch): ");
+                scanf(" %c", &targetNode);
+                clearBuffer();
+
+                deleteNode(&pRoot, targetNode);
+                printf("\n");
+            }
+            printf("\nPress Enter to return to menu...");
+            getchar();
+            clearScreen();
+            break;
+
+        case 0:
+            printf("Deallocating runtime tree components...\n");
+            freeChildren(pRoot);
+            printf("Exiting application safely. Goodbye!\n");
+            break;
+
+        default:
+            printf("Option choice unrecognized. Select an item from 0 to 8.\n");
+            printf("\nPress Enter to retry...");
+            getchar();
+            clearScreen();
+            break;
+        }
+    } while (choice != 0);
 
     return 0;
 }
