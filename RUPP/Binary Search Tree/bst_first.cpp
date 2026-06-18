@@ -72,7 +72,7 @@ void   makeLeft(bTree parent , datatype item){
     if(!isParentExist(parent)){
         return;
     }
-    if(isLeftExist(parent)){    
+    if(isLeftExist(parent)){
         throw std::runtime_error("Left child already exist");
     }
     parent->left= makeNode(item);
@@ -144,6 +144,38 @@ void postOrder(bTree root){
     std::cout<<root->info<<"\t";
 }
 
+bTree findParent(bTree root , datatype target){
+    if(root==null) return null;
+
+    if((root->left !=null && root->left->info ==target)|| (root->right !=null && root->right->info ==target)){
+        return root;
+    }
+
+    bTree findLeft = findParent(root->left,target);
+    if(findLeft!=null){
+        return findLeft;
+    }
+    return findParent(root->right,target);
+}
+/*
+*@brief search for node in binary search tree , when it stop mean it find the node
+ */
+
+
+
+ bTree searchNode(bTree root , datatype target){
+    if(root==null) return null;
+    if((root->left!=null && root->left->info==target) || (root->right !=null && root->right->info==target)){
+        return root;
+    }
+
+    bTree findLeft = searchNode(root->left, target);
+    if(findLeft !=null ){
+        return findLeft;
+    }
+    return searchNode( root->right , target);
+ }
+
 int main(){
     bTree p;
     inititalize(&p);
@@ -154,5 +186,6 @@ int main(){
     preOrder(p);
     std::cout<<"\n";
     inOrder(p);
-    
+    searchNode(p, '2');
+
 }
