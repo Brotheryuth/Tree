@@ -90,6 +90,14 @@ bTree findMin(bTree root) {
     return root;
 }
 
+// Finds the maximum node in a BST (helper for deletion)
+bTree findMax(bTree root) {
+    while (root && root->right != nullptr) {
+        root = root->right;
+    }
+    return root;
+}
+
 // Deletes a node from BST maintaining the invariants
 bTree deleteNode(bTree root, datatype target, bool& success) {
     if (root == nullptr) {
@@ -112,9 +120,30 @@ bTree deleteNode(bTree root, datatype target, bool& success) {
             return temp;
         }
         // Case 2: Node with 2 children
-        bTree temp = findMin(root->right);
-        root->info = temp->info;
-        root->right = deleteNode(root->right, temp->info, success);
+        char choice;
+        while (true) {
+            std::cout << "\nNode '" << root->info << "' has two children. Prefer replacement from left or right subtree? (l/r): ";
+            std::cin >> choice;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            if (choice == 'l' || choice == 'L' || choice == 'r' || choice == 'R') {
+                break;
+            }
+            std::cout << "Invalid choice! Enter 'l' or 'r'.\n";
+        }
+
+        if (choice == 'l' || choice == 'L') {
+            // Traverse to the right of left subtree (find the biggest)
+            bTree temp = findMax(root->left);
+            root->info = temp->info;
+            root->left = deleteNode(root->left, temp->info, success);
+        } else {
+            // Traverse to the left of right subtree (find the smallest)
+            bTree temp = findMin(root->right);
+            root->info = temp->info;
+            root->right = deleteNode(root->right, temp->info, success);
+        }
     }
     return root;
 }
@@ -147,7 +176,7 @@ void updateNode(bTree& root, datatype targetVal, datatype newVal) {
         std::cout << "\nNode updated successfully!\n";
     }
 }
-
+#pragma region  Traversal
 // Traversals (NLR)
 void preOrder(bTree root) {
     if (root == nullptr) return;
@@ -171,6 +200,8 @@ void postOrder(bTree root) {
     postOrder(root->right);
     std::cout << "\t" << root->info;
 }
+#pragma endregion
+#pragma region Canva
 
 // Populates layout recursively
 void fillCanvas(bTree node, int row, int col, int depth, int height, std::vector<std::string>& canvas) {
@@ -222,6 +253,8 @@ void displayTree(bTree root) {
         }
     }
 }
+
+#pragma endregion 
 
 // Clears console screen cleanly
 void clearScreen() {
